@@ -12,7 +12,20 @@ exports.getUserById = async (id) => {
     const [rows, fields] = await db.execute ('SELECT * FROM `usuarios` WHERE id=?, [id]');
 
 }
-exports.addUser = async (user) => {
-    const [rows, fields] = await db.execute ('INSERT INTO `usuarios`(`id`, `username`, `PASSWORD`, `role`, `img`, `email`) VALUES (?, ?, ?, ?, ?)');
-
-}
+exports.createUsuario = async (usuarioData) => {
+    const { username, password, role, img, email } = usuarioData;
+  
+    try {
+      const [result] = await db.execute(
+        'INSERT INTO usuarios (username, password, role, img, email) VALUES (?, ?, ?, ?, ?)',
+        [username, password, role, img, email]
+      );
+  
+      const nuevoUsuarioId = result.insertId;
+  
+      return { nuevoUsuarioId, ...usuarioData };
+    } catch (error) {
+      console.error('Error al crear el usuario:', error);
+      throw error;
+    }
+  };

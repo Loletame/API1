@@ -1,4 +1,4 @@
-const usuarioModel = require('./../models/usuariosModel');
+const usuariosModel = require('./../models/usuariosModel');
 
 // los controladores se encargan de la parte logica
 
@@ -6,7 +6,7 @@ exports.getUser = async (req, res)=>{
     //evaluamos el bloque dentro del try
     try {
         //obtenemos los datos desde el modelo
-        const usuarios = await usuarioModel.obtenerUsuarios();
+        const usuarios = await usuariosModel.obtenerUsuarios();
         //si todo va bien respondemos con los usuarios, del lado del cliente
         //lo obtenemos con json
         //status 200 que todo fue ok
@@ -42,22 +42,19 @@ exports.getUser = async (req, res)=>{
     } catch (error) {
         
     }
-    exports.crearUsuario = async (usuario) => {
-        //const user = req.body
-        const username = 'Wolverine';
-        const password = '5678';
-        const role = 'USER';
-        const img = 'NOT IMAGE';
-        const email = 'lobezno@gmail.com';
-        
-        const _user = 'INSERT INTO usuarios (username, password, role, img, email) VALUES (?, ?, ?, ?, ?)';
-        
+    exports.createUsuario = async (req, res) => {
         try {
-          const result = await db.execute(_user, [username, password, role, img, email]);
-          return { success: true, id: result.insertId };
+          const usuarioData = req.body;
+          const nuevoUsuario = await usuariosModel.createUsuario(usuarioData);
+          res.json(nuevoUsuario);
+          res.status(200).json({
+            success : true,
+            message : "Todo ok"
+          })
+
         } catch (error) {
-          console.error(error);
-          throw error;
+          console.error('Error al crear el usuario:', error);
+          res.status(500).json({ mensaje: 'Error al crear el usuario' });
         }
       };
     
