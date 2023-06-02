@@ -7,25 +7,20 @@ exports.obtenerUsuarios = async ()=>{
     
     console.log(rows);
     return rows;
-};
-exports.getUserById = async (id) => {
-    const [rows, fields] = await db.execute ('SELECT * FROM `usuarios` WHERE id=?, [id]');
-
 }
-exports.createUsuario = async (usuarioData) => {
-    const { username, password, role, img, email } = usuarioData;
-  
-    try {
-      const [result] = await db.execute(
-        'INSERT INTO usuarios (username, password, role, img, email) VALUES (?, ?, ?, ?, ?)',
-        [username, password, role, img, email]
-      );
-  
-      const nuevoUsuarioId = result.insertId;
-  
-      return { nuevoUsuarioId, ...usuarioData };
-    } catch (error) {
-      console.error('Error al crear el usuario:', error);
-      throw error;
-    }
-  };
+exports.getUserById = async (id) => {
+    const [rows, fields] = await db.execute('SELECT username, PASSWORD, role, img, email FROM usuarios WHERE id=?', [id]);
+    return rows;
+}
+exports.createUsuario = async (nuevousuario)=>{
+  const [rows, fields] = await db.execute('INSERT INTO usuarios (username, PASSWORD, role, img, email) VALUES (?, ?, ?, ?, ?)', [nuevousuario.username, nuevousuario.PASSWORD, nuevousuario.role, nuevousuario.img , nuevousuario.email]);
+  return rows;
+}
+exports.updateUsuario = async (usuario) =>{
+    const [rows, fields] = await db.execute(' UPDATE usuarios SET username = ?, PASSWORD = ?, role = ?, img = ? , email = ? WHERE id = ?', [usuario.username, usuario.PASSWORD, usuario.role, usuario.img , usuario.email, usuario.id]);
+    return rows;
+}
+exports.deleteUsuarioById = async (id) =>{
+  const  [rows, fields]= await db.execute('DELETE FROM usuarios WHERE id =?',[id]);
+  return rows;
+}

@@ -25,10 +25,12 @@ exports.getUser = async (req, res)=>{
             message: 'Hubo un error al obtener los datos'
         })
     }
-    exports.getUserById = async (req,res)=>{
+
+}
+    exports.getUserById = async (req,res) =>{
         const idUser = req.params.id;
-    try { const usuario = await usuarioModel.getUserById(idUser)
-        if(usuario.length <1){
+    try { const usuario = await usuariosModel.getUserById(idUser)
+        if(usuario.length <1) {
             res.status(404).json({
                 success: false,
                 message:`No existe el usuario con ID: ${idUser}`
@@ -39,27 +41,88 @@ exports.getUser = async (req, res)=>{
             usuario
         })
         
-    } catch (error) {
+    }
+     catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'Hubo un error al obtener los datos'
+        })
         
     }
+}
     exports.createUsuario = async (req, res) => {
+        const usuario = req.body;
         try {
-          const usuarioData = req.body;
-          const nuevoUsuario = await usuariosModel.createUsuario(usuarioData);
-          res.json(nuevoUsuario);
+          
+          const id = await usuariosModel.createUsuario(usuario)
+          //res.json(nuevoUsuario);
           res.status(200).json({
             success : true,
-            message : "Todo ok"
+            message : "Todo ok",
+            usuario
           })
 
         } catch (error) {
-          console.error('Error al crear el usuario:', error);
-          res.status(500).json({ mensaje: 'Error al crear el usuario' });
+          console.error('Error al crear el usuario!:', error);
+          res.status(500).json({
+            success:false, mensaje: 'Error al crear el usuario' 
+        })
         }
-      };
+      }
+    
+      exports.updateUsuario = async (req, res) => {
+        const id = req.params.id;
+        const usuarioActualizado = req.body;
+
+        const usuario = {
+            id,
+            ...usuarioActualizado
+
+        }
+         try { 
+            const listaActualizada = await usuariosModel.updateUsuario(usuario)
+            if (listaActualizada <1) {
+                res.status(404).json({
+                    success: false,
+                    message: "datos no actualizados"
+                })
+            }
+            res.status(200).json({
+                succes: true,
+                message: "actualizado correctamente"
+            })
+            }
+            
+          
+         catch(error) {
+            res.status(500).json({
+                success: false,
+                message: "No anduvio"
+            })
+            }
+        }
+    exports.deleteUsuarioById = async (req, res) =>{
+        const idUsuario = req.params.id;
+        try {
+            const usuario = await usuariosModel.deleteUsuarioById(idUsuario)
+            if (usuario.length<1){
+                res.status(404).json({
+                    success: false,
+                    message: `No existe el usuario ${idUsuario}`
+                })
+            }
+            res.status(200).json({
+                success: true,
+                message: "El usuario se elimino correctamente"
+            })
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                success:false,
+                message: 'Hubo un error al eliminar el usuario'
+            })
+        }
+    }
     
 
-
-    }
-
-}
